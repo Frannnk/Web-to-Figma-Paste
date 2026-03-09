@@ -1,6 +1,7 @@
 # Web to Figma Paste
 
 Chrome extension for capturing webpage content and pasting into Figma with `Cmd/Ctrl + V`.
+
 <img width="1280" height="800" alt="Web to Figma" src="https://github.com/user-attachments/assets/0d198f32-41a0-4a45-9423-c44652fba69d" />
 
 ## Features
