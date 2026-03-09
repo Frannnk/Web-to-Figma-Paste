@@ -1,4 +1,4 @@
-# WebLink to Figma
+# Web to Figma Paste
 
 Chrome extension for capturing webpage content and pasting into Figma with `Cmd/Ctrl + V`.
 
