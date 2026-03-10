@@ -12,10 +12,10 @@
   --wl-sub: #4b5563;
   --wl-close-border: rgba(15, 23, 42, 0.14);
   --wl-close-bg: transparent;
-  --wl-close-bg-hover: rgba(15, 23, 42, 0.12);
+  --wl-close-bg-hover: rgba(15, 23, 42, 0.08);
   --wl-button-border: rgba(15, 23, 42, 0.12);
   --wl-button-bg: rgba(15, 23, 42, 0.06);
-  --wl-button-bg-hover: rgba(15, 23, 42, 0.12);
+  --wl-button-bg-hover: rgba(15, 23, 42, 0.08);
   --wl-icon: #4b5563;
   --wl-author: #6b7280;
   --wl-status-bg: rgba(255, 255, 255, 0.66);

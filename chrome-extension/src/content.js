@@ -64,7 +64,8 @@
       </div>
     `;
 
-    document.body.appendChild(toolbar);
+    // Mount overlay outside <body> so body capture never includes extension UI.
+    document.documentElement.appendChild(toolbar);
     toolbar.querySelectorAll('*').forEach((node) => {
       node.setAttribute('data-figma-capture-ignore', '1');
     });
@@ -73,7 +74,7 @@
     hoverOutline = document.createElement('div');
     hoverOutline.id = 'weblink-figma-hover-outline';
     hoverOutline.setAttribute('data-figma-capture-ignore', '1');
-    document.body.appendChild(hoverOutline);
+    document.documentElement.appendChild(hoverOutline);
 
     toolbar.addEventListener('click', onToolbarClick);
     document.addEventListener('mousemove', onMouseMove, true);
@@ -157,6 +158,10 @@
   }
 
   async function copyBySelector(selector, sourceLabel) {
+    // capture.js treats literal "body" as whole document capture.
+    // Use an equivalent selector to target only the <body> element.
+    const effectiveSelector = selector === 'body' ? 'body:nth-of-type(1)' : selector;
+
     setStatus(`${sourceLabel}\n开始采集...`, 'progress');
     await wait(120);
     setStatus(`${sourceLabel}\n采集中...\n正在扫描 DOM、布局与样式...`, 'progress');
@@ -166,7 +171,7 @@
     try {
       const responsePromise = chrome.runtime.sendMessage({
         type: 'WEBLINK_COPY_CAPTURE',
-        selector
+        selector: effectiveSelector
       });
 
       // Fast-feedback UX: if backend takes too long, switch to success copy hint quickly.
@@ -195,18 +200,27 @@
         responsePromise
           .then((response) => {
             if (!response?.ok) {
-              setStatus(`${sourceLabel}\n采集失败：${response?.error || '未知采集错误'}`, 'error');
+              setStatus(`${sourceLabel}\n采集失败：${toUserFacingError(response?.error)}`, 'error');
             }
           })
           .catch((error) => {
-            setStatus(`${sourceLabel}\n采集失败：${String(error.message || error)}`, 'error');
+            setStatus(`${sourceLabel}\n采集失败：${toUserFacingError(error)}`, 'error');
           });
       }
     } catch (error) {
-      setStatus(`${sourceLabel}\n采集失败：${String(error.message || error)}`, 'error');
+      setStatus(`${sourceLabel}\n采集失败：${toUserFacingError(error)}`, 'error');
     } finally {
       restoreOverlay();
     }
+  }
+
+  function toUserFacingError(error) {
+    const raw = String(error?.message || error || '未知采集错误');
+    const lower = raw.toLowerCase();
+    if (lower.includes('extension context invalidated')) {
+      return '扩展已更新或重载，请刷新当前页面后重试。';
+    }
+    return raw;
   }
 
   function drawHover(el) {
@@ -292,25 +306,9 @@
     state.picking = false;
     state.hoverEl = null;
     hideHover();
-
-    const toolbarNode = toolbar;
-    const hoverNode = hoverOutline;
-    const toolbarParent = toolbarNode?.parentNode || null;
-    const toolbarNext = toolbarNode?.nextSibling || null;
-    const hoverParent = hoverNode?.parentNode || null;
-    const hoverNext = hoverNode?.nextSibling || null;
-
-    toolbarNode?.remove();
-    hoverNode?.remove();
-
-    return () => {
-      if (state.toolbarVisible && toolbarNode && toolbarParent && !toolbarNode.isConnected) {
-        toolbarParent.insertBefore(toolbarNode, toolbarNext);
-      }
-      if (state.toolbarVisible && hoverNode && hoverParent && !hoverNode.isConnected) {
-        hoverParent.insertBefore(hoverNode, hoverNext);
-      }
-    };
+    // Keep toolbar mounted to avoid visual flicker. Overlay nodes are marked
+    // with data-figma-capture-ignore so they should not be included in capture.
+    return () => {};
   }
 
 })();
