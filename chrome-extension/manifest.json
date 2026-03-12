@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Web to Figma Paste",
   "description": "Capture webpage and copy Figma-compatible clipboard payload directly from Chrome extension.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "permissions": ["activeTab", "scripting", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
   "action": {
