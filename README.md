@@ -16,7 +16,7 @@ Chrome extension for capturing webpage content and pasting into Figma with `Cmd/
 1. Open `chrome://extensions`
 2. Enable Developer mode
 3. Click **Load unpacked**
-4. Select `/chrome-extension`
+4. Select the repo's `chrome-extension/` directory
 
 ## Usage
 1. Open target webpage

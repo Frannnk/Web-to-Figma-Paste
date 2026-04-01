@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('WebLink Figma Capture installed.');
+  console.log('Web to Figma Paste installed.');
 });
 
 chrome.action.onClicked.addListener(async (tab) => {
